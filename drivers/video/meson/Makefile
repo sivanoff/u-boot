@@ -7,3 +7,5 @@
 obj-$(CONFIG_VIDEO_MESON) = meson_vpu.o meson_vpu_init.o meson_canvas.o
 obj-$(CONFIG_VIDEO_MESON) += meson_plane.o meson_venc.o meson_vclk.o
 obj-$(CONFIG_VIDEO_MESON) += meson_dw_hdmi.o simplefb_common.o ../dw_hdmi.o
+
+ccflags-y = -O0 -g3 -fno-inline -DDEBUG

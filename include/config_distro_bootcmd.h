@@ -131,11 +131,15 @@
 		"fi;"                                                     \
 		"load ${devtype} ${devnum}:${distro_bootpart} "           \
 			"${kernel_addr_r} efi/boot/"BOOTEFI_NAME"; "      \
+	"in=$stdin; out=$stdout; err=$stderr; echo EFI SLOW plz wait ...;"\
+	"setenv stdin serial;setenv stdout serial; setenv stderr serial; "\
 		"if fdt addr ${fdt_addr_r}; then "                        \
 			"bootefi ${kernel_addr_r} ${fdt_addr_r};"         \
 		"else "                                                   \
 			"bootefi ${kernel_addr_r} ${fdtcontroladdr};"     \
-		"fi\0"                                                    \
+		"fi; "                                                    \
+	"setenv stdin $in;setenv stdout $out; setenv stderr $err; "       \
+		" \0"                                                     \
 	\
 	"load_efi_dtb="                                                   \
 		"load ${devtype} ${devnum}:${distro_bootpart} "           \
@@ -266,7 +270,7 @@
 #ifdef CONFIG_CMD_USB
 #define BOOTENV_RUN_NET_USB_START "run boot_net_usb_start; "
 #define BOOTENV_SHARED_USB \
-	"boot_net_usb_start=usb start\0" \
+	"boot_net_usb_start=;\0" \
 	"usb_boot=" \
 		"usb start; " \
 		BOOTENV_SHARED_BLKDEV_BODY(usb)
@@ -367,7 +371,7 @@
 		BOOTENV_RUN_NET_USB_START \
 		BOOTENV_RUN_PCI_ENUM \
 		"if dhcp ${scriptaddr} ${boot_script_dhcp}; then " \
-			"source ${scriptaddr}; " \
+			"script ${scriptaddr}; " \
 		"fi;" \
 		BOOTENV_EFI_RUN_DHCP \
 		"\0"
@@ -401,7 +405,8 @@
 #define BOOTENV_DEV_NAME(devtypeu, devtypel, instance) \
 	BOOTENV_DEV_NAME_##devtypeu(devtypeu, devtypel, instance)
 #define BOOTENV_BOOT_TARGETS \
-	"boot_targets=" BOOT_TARGET_DEVICES(BOOTENV_DEV_NAME) "\0"
+	"bootcmd_spi=sf probe && sf read $loadaddr 0x160000 0x008000 && script - - 0 1\0" \
+	"boot_targets=spi usb0 " BOOT_TARGET_MMC(BOOTENV_DEV_NAME) " pxe dhcp \0"
 
 #define BOOTENV_DEV(devtypeu, devtypel, instance) \
 	BOOTENV_DEV_##devtypeu(devtypeu, devtypel, instance)
@@ -418,7 +423,9 @@
 	BOOTENV_SHARED_EFI \
 	BOOTENV_SHARED_VIRTIO \
 	"boot_prefixes=/ /boot/\0" \
-	"boot_scripts=boot.scr.uimg boot.scr\0" \
+	"loadaddr=0x01000000\0" \
+	"bootfile=boot.scr.uimg\0" \
+	"boot_scripts=boot.cmd boot.ini boot.scr.uimg boot.scr\0" \
 	"boot_script_dhcp=boot.scr.uimg\0" \
 	BOOTENV_BOOT_TARGETS \
 	\
@@ -438,8 +445,8 @@
 	\
 	"boot_a_script="                                                  \
 		"load ${devtype} ${devnum}:${distro_bootpart} "           \
-			"${scriptaddr} ${prefix}${script}; "              \
-		"source ${scriptaddr}\0"                                  \
+			"${scriptaddr} ${prefix}${script} && "            \
+		"script ${scriptaddr} \0"                                 \
 	\
 	"scan_dev_for_scripts="                                           \
 		"for script in ${boot_scripts}; do "                      \

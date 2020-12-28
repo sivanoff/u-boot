@@ -168,7 +168,7 @@ static int spl_fit_get_image_node(const void *fit, int images,
 	if (err)
 		return err;
 
-	debug("%s: '%s'\n", type, str);
+	printf("FIT: %s: '%s'\n", type, str);
 
 	node = fdt_subnode_offset(fit, images, str);
 	if (node < 0) {
@@ -256,12 +256,12 @@ static int spl_load_fit_image(struct spl_load_info *info, ulong sector,
 		if (fit_image_get_type(fit, node, &type))
 			puts("Cannot get image type.\n");
 		else
-			debug("%s ", genimg_get_type_name(type));
+			printf("FIT: %s ", genimg_get_type_name(type));
 	}
 
 	if (IS_ENABLED(CONFIG_SPL_GZIP)) {
 		fit_image_get_comp(fit, node, &image_comp);
-		debug("%s ", genimg_get_comp_name(image_comp));
+		printf("%s ", genimg_get_comp_name(image_comp));
 	}
 
 	if (fit_image_get_load(fit, node, &load_addr))
@@ -290,7 +290,7 @@ static int spl_load_fit_image(struct spl_load_info *info, ulong sector,
 			       nr_sectors, (void *)load_ptr) != nr_sectors)
 			return -EIO;
 
-		debug("External data: dst=%lx, offset=%x, size=%lx\n",
+		printf("External data: dst=%lx, offset=%x, size=%lx\n",
 		      load_ptr, offset, (unsigned long)length);
 		src = (void *)load_ptr + overhead;
 	} else {
@@ -299,7 +299,7 @@ static int spl_load_fit_image(struct spl_load_info *info, ulong sector,
 			puts("Cannot get image data/size\n");
 			return -ENOENT;
 		}
-		debug("Embedded data: dst=%lx, size=%lx\n", load_addr,
+		printf("Embedded data: dst=%lx, size=%lx\n", load_addr,
 		      (unsigned long)length);
 		src = (void *)data;
 	}

@@ -39,8 +39,12 @@ int dram_init_banksize(void)
 			 gd->ram_top);
 
 #ifdef CONFIG_ARM64
-	/* Reserve 0x200000 for ATF bl31 */
-	gd->bd->bi_dram[0].start = 0x200000;
+	struct tos_parameter_t *tos_parameter;
+
+	tos_parameter = (struct tos_parameter_t *)(CONFIG_SYS_SDRAM_BASE +
+				TRUST_PARAMETER_OFFSET);
+
+	gd->bd->bi_dram[0].start = tos_parameter->tee_mem.phy_addr + tos_parameter->tee_mem.size;
 	gd->bd->bi_dram[0].size = top - gd->bd->bi_dram[0].start;
 #else
 #ifdef CONFIG_SPL_OPTEE

@@ -16,6 +16,59 @@
 #include <asm/arch-rockchip/misc.h>
 #include <power/regulator.h>
 
+#define BOOT_DEVICE_NAND      1
+#define BOOT_DEVICE_EMMC      2
+#define BOOT_DEVICE_SPI       3
+#define BOOT_DEVICE_SPI_NAND  4
+#define BOOT_DEVICE_SD        5
+#define BOOT_DEVICE_USB       10
+
+static u32 rk_get_boot_device(void)
+{
+    u32  bootdevice_id  = readl(0x01000000);
+
+    if ( bootdevice_id < 100 || bootdevice_id > 120 )
+	return 0;
+
+    return bootdevice_id - 100;
+}
+
+static void rk_set_boot_source(void)
+{
+
+    const char *source;
+    u32 boot_device_id = rk_get_boot_device();
+    switch (boot_device_id) {
+    case BOOT_DEVICE_EMMC:
+	source = "emmc";
+	break;
+
+    case BOOT_DEVICE_NAND:
+	source = "nand";
+	break;
+
+    case BOOT_DEVICE_SPI:
+	source = "spi";
+	break;
+
+    case BOOT_DEVICE_SD:
+	source = "sd";
+	break;
+
+    case BOOT_DEVICE_USB:
+	source = "usb";
+	break;
+
+    default:
+	source = "unknown";
+    }
+
+    //printf("*** BOOT_SOURCE %u = %s ***\n", boot_device_id, source);
+
+    env_set("boot_source", source);
+
+}
+
 DECLARE_GLOBAL_DATA_PTR;
 
 __weak int rk_board_late_init(void)
@@ -26,9 +79,10 @@ __weak int rk_board_late_init(void)
 int board_late_init(void)
 {
 	setup_boot_mode();
-
+	rk_set_boot_source();
 	return rk_board_late_init();
 }
+
 
 int board_init(void)
 {
@@ -39,7 +93,7 @@ int board_init(void)
 	if (ret)
 		debug("%s: Cannot enable boot on regulator\n", __func__);
 #endif
-
+	rk_set_boot_source();
 	return 0;
 }
 

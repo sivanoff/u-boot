@@ -707,17 +707,17 @@ void board_init_r(gd_t *dummy1, ulong dummy2)
 #endif
 	switch (spl_image.os) {
 	case IH_OS_U_BOOT:
-		debug("Jumping to U-Boot\n");
+		printf("Jumping to U-Boot\n");
 		break;
 #if CONFIG_IS_ENABLED(ATF)
 	case IH_OS_ARM_TRUSTED_FIRMWARE:
-		debug("Jumping to U-Boot via ARM Trusted Firmware\n");
+		printf("Jumping to U-Boot via ARM Trusted Firmware\n");
 		spl_invoke_atf(&spl_image);
 		break;
 #endif
 #if CONFIG_IS_ENABLED(OPTEE)
 	case IH_OS_TEE:
-		debug("Jumping to U-Boot via OP-TEE\n");
+		printf("Jumping to U-Boot via OP-TEE\n");
 		spl_optee_entry(NULL, NULL, spl_image.fdt_addr,
 				(void *)spl_image.entry_point);
 		break;
@@ -730,7 +730,7 @@ void board_init_r(gd_t *dummy1, ulong dummy2)
 #endif
 #ifdef CONFIG_SPL_OS_BOOT
 	case IH_OS_LINUX:
-		debug("Jumping to Linux\n");
+		printf("Jumping to Linux\n");
 		spl_fixup_fdt();
 		spl_board_prepare_for_linux();
 		jump_to_image_linux(&spl_image);
@@ -751,7 +751,7 @@ void board_init_r(gd_t *dummy1, ulong dummy2)
 		debug("Failed to stash bootstage: err=%d\n", ret);
 #endif
 
-	debug("loaded - jumping to U-Boot...\n");
+	printf("loaded - jumping to U-Boot...\n");
 	spl_board_prepare_for_boot();
 	jump_to_image_no_args(&spl_image);
 }

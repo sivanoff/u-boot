@@ -134,7 +134,7 @@ uintptr_t spl_fit_images_get_entry(void *blob, int node)
 	if (val == FDT_ERROR)
 		val = fdt_getprop_u32(blob, node, "load-addr");
 
-	debug("%s: entry point 0x%lx\n", __func__, val);
+	printf("%s: entry point 0x%lx\n", __func__, val);
 	return val;
 }
 

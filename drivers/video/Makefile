@@ -71,3 +71,5 @@ obj-$(CONFIG_VIDEO_VESA) += vesa.o
 
 obj-y += bridge/
 obj-y += sunxi/
+
+ccflags-y = -O0 -g3 -fno-inline -DDEBUG

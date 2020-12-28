@@ -481,8 +481,12 @@ static int initr_env(void)
 	else
 		env_set_default(NULL, 0);
 #ifdef CONFIG_OF_CONTROL
-	env_set_hex("fdtcontroladdr",
-		    (unsigned long)map_to_sysmem(gd->fdt_blob));
+	ulong fdt_begin = (unsigned long)map_to_sysmem(gd->fdt_blob);
+	env_set_hex("fdtcontroladdr", fdt_begin );
+	ulong fdt_size = (unsigned long)fdt_totalsize(gd->fdt_blob);
+//	printf("FDT SIZE: %lu\n", fdt_size);
+	env_set_hex("fdt_size", fdt_size );
+	env_set_hex("fdtcontroladdr_end", fdt_begin + fdt_size );
 #endif
 
 	/* Initialize from environment */
@@ -664,6 +668,16 @@ static int run_main_loop(void)
 	for (;;)
 		main_loop();
 	return 0;
+}
+
+static int run_env_save(void)
+{
+    if ( env_get("env_need_save") ){
+	printf("[i] env_need_save... ");
+	env_set("env_need_save",NULL);
+	run_command("saveenv",1);
+    }
+    return 0;
 }
 
 /*
@@ -856,6 +870,7 @@ static init_fnc_t init_sequence_r[] = {
 	 * Interrupts) are up and running (i.e. the PC-style ISA
 	 * keyboard).
 	 */
+
 	last_stage_init,
 #endif
 #ifdef CONFIG_CMD_BEDBUG
@@ -868,6 +883,7 @@ static init_fnc_t init_sequence_r[] = {
 #if defined(CONFIG_M68K) && defined(CONFIG_BLOCK_CACHE)
 	blkcache_init,
 #endif
+	run_env_save,
 	run_main_loop,
 };
 

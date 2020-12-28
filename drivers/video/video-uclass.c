@@ -132,6 +132,11 @@ void video_set_default_colors(struct udevice *dev, bool invert)
 		fore = VID_BLACK;
 		back = VID_WHITE;
 	}
+
+#if defined CONSOLE_FONT_COLOR
+	fore = CONSOLE_FONT_COLOR;
+#endif
+
 	if (invert) {
 		int temp;
 
@@ -162,6 +167,7 @@ void video_sync(struct udevice *vid, bool force)
 					 CONFIG_SYS_CACHELINE_SIZE));
 	}
 #elif defined(CONFIG_VIDEO_SANDBOX_SDL)
+
 	struct video_priv *priv = dev_get_uclass_priv(vid);
 	static ulong last_sync;
 

@@ -524,6 +524,15 @@ int dm_gpio_set_value(const struct gpio_desc *desc, int value)
 	if (ret)
 		return ret;
 
+	if (desc->flags & GPIOD_OPEN_DRAIN) {
+		if (value)
+		    gpio_get_ops(desc->dev)->direction_input(desc->dev, desc->offset);
+		else
+		    gpio_get_ops(desc->dev)->direction_output(desc->dev, desc->offset,0);
+
+		return 0;
+       }
+
 	if (desc->flags & GPIOD_ACTIVE_LOW)
 		value = !value;
 	gpio_get_ops(desc->dev)->set_value(desc->dev, desc->offset, value);

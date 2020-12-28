@@ -30,6 +30,11 @@ const char *board_spl_was_booted_from(void)
 	u32  bootdevice_brom_id = readl(BROM_BOOTSOURCE_ID_ADDR);
 	const char *bootdevice_ofpath = NULL;
 
+	// save value+100 to safety mem area 0x01000000
+	// for next boot_source usage in uboot stage
+	writel(bootdevice_brom_id + 100, 0x01000000);
+	printf("*** BOOT_SOURCE_ID %u (2:emmc 3:spi 5:sd ...)***\n", bootdevice_brom_id );
+
 	if (bootdevice_brom_id < ARRAY_SIZE(boot_devices))
 		bootdevice_ofpath = boot_devices[bootdevice_brom_id];
 

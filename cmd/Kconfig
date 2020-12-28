@@ -2098,6 +2098,12 @@ config CMD_ZFS
 
 	  See doc/README.zfs for more details.
 
+config CMD_SCRIPT
+	bool "simple plain script run from mem without mkimage wrappers"
+	default y
+	help
+	  simple plain script run from mem without mkimage wrappers
+
 endmenu
 
 menu "Debug commands"
@@ -2199,5 +2205,10 @@ config CMD_UBIFS
 	select LZO
 	help
 	  UBIFS is a file system for flash devices which works on top of UBI.
+
+config CMD_KHADAS_KBI
+	bool "Khadas Bootloader Instructions"
+	help
+	  Khadas Bootloader Instructions
 
 endmenu
