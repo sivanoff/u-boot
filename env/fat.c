@@ -35,7 +35,7 @@
 	disk_partition_t info;
 	int dev, part;
 
-#define CONFIG_ENV_FAT_AUTO_SOURCE 1
+//#define CONFIG_ENV_FAT_AUTO_SOURCE 1
 #define CONFIG_ENV_FAT_DEVICE_AND_PART_SD  "1:1"
 #define CONFIG_ENV_FAT_DEVICE_AND_PART_MMC "2:1"
 
