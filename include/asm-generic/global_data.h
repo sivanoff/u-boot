@@ -83,7 +83,7 @@ typedef struct global_data {
 	const void *multi_dtb_fit;	/* uncompressed multi-dtb FIT image */
 #endif
 	struct jt_funcs *jt;		/* jump table */
-	char env_buf[32];		/* buffer for env_get() before reloc. */
+	char env_buf[64];		/* buffer for env_get() before reloc. */
 #ifdef CONFIG_TRACE
 	void		*trace_buff;	/* The trace buffer */
 #endif
